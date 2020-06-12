@@ -1,7 +1,5 @@
 package compiler
 
-//type Rv32Type uint8
-
 const (
 	RV32_TYPE_NULL = iota
 	RV32_TYPE_I
