@@ -2,22 +2,34 @@ package generator
 
 import (
 	"fmt"
+	"log"
 )
 
 func GenerateHex(input []byte) []byte {
-	result := ""
+	log.Println(len(input), input)
 
-	hexLL := []byte{byte(len(input))}
-	hexAAAA := []byte{0x00, 0x00}
-	hexTT := []byte{0x00}
-	hexDD := input
-	hexCC := getHexCheck(hexLL, hexAAAA, hexTT, hexDD)
+	result := ""
+	format := "%s:%X%X%X%X%X\n"
+	for address := 0; address < len(input)/4; address++ {
+		inputBytes32bit := []byte{
+			input[address*4+0],
+			input[address*4+1],
+			input[address*4+2],
+			input[address*4+3],
+		}
+		hexLL := []byte{byte(len(inputBytes32bit))}
+		hexAAAA := []byte{byte(address >> 16*16), byte(address)}
+		hexTT := []byte{0x00}
+		hexDD := inputBytes32bit
+
+		hexCC := getHexCheck(hexLL, hexAAAA, hexTT, hexDD)
+		result = fmt.Sprintf(format, result, hexLL, hexAAAA, hexTT, hexDD, hexCC)
+	}
 
 	// add hex file format EOF
+	//hexBOF := ":040000030000"
 	hexEOF := ":00000001FF"
-
-	format := "%s:%x%x%x%x%x\n%s\n"
-	result = fmt.Sprintf(format, result, hexLL, hexAAAA, hexTT, hexDD, hexCC, hexEOF)
+	result = result + hexEOF
 
 	//log.Println("result", result)
 
@@ -26,15 +38,19 @@ func GenerateHex(input []byte) []byte {
 	return byteArray
 }
 
-func getHexCheck(byteArrayArray ...[]byte) uint8 {
-	result := 0
-	var sum = 0
+func getHexCheck(byteArray ...[]byte) uint8 {
+	//log.Println(byteArray)
+	sum := 0
 
-	for _, byteArray := range byteArrayArray {
-		for _, v := range byteArray {
-			sum = sum + int(v)
+	for _, item := range byteArray {
+		for _, itemByte := range item {
+			sum = sum + int(itemByte)
 		}
 	}
-	result = sum % 0x100
+
+	sumLSB := uint8(sum)
+	result := 0x100 - uint16(sumLSB)
+
+	//log.Println(uint8(result))
 	return uint8(result)
 }

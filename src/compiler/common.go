@@ -85,3 +85,18 @@ func (raw *rv32) setImmBitForRv32TypeU(imm int) {
 	raw.setBitForRv32(strCode_31_12, 12)
 	//return result
 }
+
+func (raw *rv32) setImmBitForRv32TypeJ(imm int) {
+	imm = imm >> 1
+	strCode := util.IntToBinaryString(imm, 32)
+	strCode = util.ReverseString(strCode)
+	strCode_20 := util.ReverseString(strCode[20:20+1])
+	raw.setBitForRv32(strCode_20, 31)
+	strCode_10_1 := util.ReverseString(strCode[1:10+1])
+	raw.setBitForRv32(strCode_10_1, 31-1)
+	strCode_11 := util.ReverseString(strCode[11:11+1])
+	raw.setBitForRv32(strCode_11, 31-1-11)
+	strCode_19_12 := util.ReverseString(strCode[12:19+1])
+	raw.setBitForRv32(strCode_19_12, 31-1-11-1)
+	//return result
+}

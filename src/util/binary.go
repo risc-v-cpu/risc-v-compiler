@@ -3,20 +3,25 @@ package util
 import (
 	"strconv"
 	"strings"
+	"unsafe"
 )
 
-func IntToBinaryString(num int, zeroFill int) string {
-	s := ""
+func IntToBinaryString(num int, fill int) string {
+	s := strconv.FormatUint(*(*uint64)(unsafe.Pointer(&num)), 2)
+	//log.Println("num", num, "fill", fill, "s", s)
 
-	for ; num > 0; num /= 2 {
-		lsb := num % 2
-		s = strconv.Itoa(lsb) + s
+	needFillCount := fill - len(s)
+	if needFillCount >= 0 {
+		extendNum := "0"
+		if num < 0 {
+			extendNum = "1"
+		}
+		s = strings.Repeat(extendNum, needFillCount) + s
+	} else {
+		s = s[-needFillCount:]
 	}
 
-	needFillCount := zeroFill - len(s)
-	if needFillCount > 0 {
-		s = strings.Repeat("0", needFillCount) + s
-	}
+	//log.Println("num", num, "fill", fill, "s", s)
 
 	return s
 }

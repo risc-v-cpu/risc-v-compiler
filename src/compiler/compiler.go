@@ -23,7 +23,7 @@ func compile(assemblerInstruction string) []byte {
 	result := make([]byte, 0)
 	mcs := assemblerInstructionToMachineCodeStructure(assemblerInstruction)
 	byteArray32bit := mcs.machineCodeStructureToByteArray()
-	log.Printf("%v %v \t %v \n", byteArray32bit, mcs, assemblerInstruction)
+	log.Printf("%v opcode: %v funct3: %v %v \t  \t %v \n", byteArray32bit, byteArray32bit[31-6:31-0+1], byteArray32bit[31-14:31-12+1], mcs, assemblerInstruction)
 	byteArray4bit := convert32ByteArrayFrom32bitTo4bit(byteArray32bit)
 	for _, v := range byteArray4bit {
 		result = append(result, v)
@@ -74,8 +74,8 @@ func (mcs machineCodeStructure)machineCodeStructureToByteArray() rv32 {
 
 	case RV32_TYPE_S:
 		result.setOpCode(RV32_OPCODE_S)
-		result.setRs1(mcs.Operand[1])
-		result.setRs2(mcs.Operand[2])
+		result.setRs1(mcs.Operand[0])
+		result.setRs2(mcs.Operand[1])
 		result.setImmBitForRv32TypeS(mcs.Operand[2])
 
 	case RV32_TYPE_R:
@@ -92,8 +92,8 @@ func (mcs machineCodeStructure)machineCodeStructureToByteArray() rv32 {
 
 	case RV32_TYPE_B:
 		result.setOpCode(RV32_OPCODE_B)
-		result.setRs1(mcs.Operand[1])
-		result.setRs2(mcs.Operand[2])
+		result.setRs1(mcs.Operand[0])
+		result.setRs2(mcs.Operand[1])
 		result.setImmBitForRv32TypeB(mcs.Operand[2])
 
 	}
@@ -178,6 +178,16 @@ func (mcs machineCodeStructure)machineCodeStructureToByteArray() rv32 {
 		result.setFunct3(RV32_FUNCT3_OR)
 	case "AND"	:
 		result.setFunct3(RV32_FUNCT3_AND)
+	case "JAL"	:
+		result.setOpCode(RV32_OPCODE_JAL)
+		result.setImmBitForRv32TypeJ(mcs.Operand[0])
+		result.setRd(mcs.Operand[1])
+	case "JALR"	:
+		result.setOpCode(RV32_OPCODE_JALR)
+	case "AUIPC":
+		result.setOpCode(RV32_OPCODE_AUIPC)
+	case "LUI"	:
+		result.setOpCode(RV32_OPCODE_LUI)
 
 	}
 

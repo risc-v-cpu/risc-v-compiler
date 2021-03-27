@@ -6,7 +6,7 @@ import (
 
 type IntToBinaryStringTestCase struct {
 	num      int
-	zeroFill int
+	fill int
 	output   string
 }
 
@@ -16,16 +16,21 @@ func TestConvertToBin(t *testing.T) {
 		{1, 8, "00000001"},
 		{8, 8, "00001000"},
 		{6, 6, "000110"},
-		{4, 1, "100"},
+		{4, 12, "000000000100"},
+		{2, 12, "000000000010"},
+		{-2, 12, "111111111110"},
+		{-3, 12, "111111111101"},
+		{-4, 12, "111111111100"},
+		{-8, 12, "111111111000"},
 	}
 
 	for i := 0; i < len(testCase); i++ {
 		num := testCase[i].num
-		zeroFill := testCase[i].zeroFill
-		output := IntToBinaryString(num, zeroFill)
+		fill := testCase[i].fill
+		output := IntToBinaryString(num, fill)
 		correctOutput := testCase[i].output
 		if output != correctOutput {
-			t.Errorf("IntToBinaryString(%v, %v) is %v , but need %v. \n", num, zeroFill, output, correctOutput)
+			t.Errorf("IntToBinaryString(%v, %v) is %v , but need %v. \n", num, fill, output, correctOutput)
 		}
 	}
 

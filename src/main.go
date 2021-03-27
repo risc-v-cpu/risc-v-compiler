@@ -18,6 +18,7 @@ func main() {
 func run(input string, output string) {
 	strArray := util.ReadFileToLinesWithoutLineBreak(input)
 	byteArray := compiler.CompileAll(strArray)
+	//generator.GenerateHex(byteArray)
 	hexArray := generator.GenerateHex(byteArray)
 	util.WriteFilesByByteArray(output, hexArray)
 }
